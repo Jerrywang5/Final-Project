@@ -1,3 +1,4 @@
+#coding:utf-8
 """Gomoku Game: Beat the Bot!"""
 
 import sys
@@ -73,35 +74,35 @@ def main():
                     pressed_array = pygame.mouse.get_pressed()
                     if pressed_array[0]:
                         mouse_pos = pygame.mouse.get_pos()
-                        click_point = _get_clickpoint(mouse_pos)
+                        click_point = get_clickpoint(mouse_pos)
                         if click_point is not None:
                             if checkerboard.can_drop(click_point):
                                 winner = checkerboard.drop(cur_runner, click_point)
                                 if winner is None:
-                                    cur_runner = _get_next(cur_runner)
+                                    cur_runner = get_next(cur_runner)
                                     computer.get_opponent_drop(click_point)
                                     AI_point = computer.AI_drop()
                                     winner = checkerboard.drop(cur_runner, AI_point)
                                     if winner is not None:
                                         white_win_count += 1
-                                    cur_runner = _get_next(cur_runner)
+                                    cur_runner = get_next(cur_runner)
                                 else:
                                     black_win_count += 1
                         else:
                             print('Out of Bound')
 
         # Draw the grid
-        _draw_board(screen)
+        draw_board(screen)
 
         # Draw the existing pieces on the grid
         for i, row in enumerate(checkerboard.checkerboard):
             for j, cell in enumerate(row):
                 if cell == Black_Piece.Value:
-                    _draw_piece(screen, Point(j, i), Black_Piece.Color)
+                    draw_piece(screen, Point(j, i), Black_Piece.Color)
                 elif cell == White_Piece.Value:
-                    _draw_piece(screen, Point(j, i), White_Piece.Color)
+                    draw_piece(screen, Point(j, i), White_Piece.Color)
 
-        _draw_left_info(screen, font1, cur_runner, black_win_count, white_win_count)
+        draw_left_info(screen, font1, cur_runner, black_win_count, white_win_count)
         # If a winner appears, then print the following txt.
         if winner:
             print_msg(screen, font2, (screen_width - fwidth)//2, (screen_height - fheight)//2, winner.Name + ' Wins', Red_Color)
@@ -109,7 +110,7 @@ def main():
         pygame.display.flip()
 
 # Determine who goes next
-def _get_next(cur_runner):
+def get_next(cur_runner):
     if cur_runner == Black_Piece:
         return White_Piece
     else:
@@ -117,7 +118,7 @@ def _get_next(cur_runner):
 
 
 # Draw the board (grid)
-def _draw_board(screen):
+def draw_board(screen):
     # Fill the background color of the board
     screen.fill(Checkerboard_Color)
     # Draw the frame lines
@@ -148,33 +149,33 @@ def _draw_board(screen):
 
 
 # Show the left-hand-side information
-def _draw_left_info(screen, font, cur_runner, black_win_count, white_win_count):
-    _draw_piece_pos(screen, (screen_height + Piece_Radius2, start_X + Piece_Radius2), Black_Piece.Color)
-    _draw_piece_pos(screen, (screen_height + Piece_Radius2, start_X + Piece_Radius2 * 4), White_Piece.Color)
+def draw_left_info(screen, font, cur_runner, black_win_count, white_win_count):
+    draw_piece_pos(screen, (screen_height + Piece_Radius2, start_X + Piece_Radius2), Black_Piece.Color)
+    draw_piece_pos(screen, (screen_height + Piece_Radius2, start_X + Piece_Radius2 * 4), White_Piece.Color)
 
     print_msg(screen, font, Right_Init_Pos_X, start_X + 3, 'Player', Green_Color)
     print_msg(screen, font, Right_Init_Pos_X, start_X + Piece_Radius2 * 3 + 3, 'Bot', Green_Color)
 
     print_msg(screen, font, screen_height, screen_height - Piece_Radius2 * 8, 'Progress:', Green_Color)
-    _draw_piece_pos(screen, (screen_height + Piece_Radius2, screen_height - int(Piece_Radius2 * 4.5)), Black_Piece.Color)
-    _draw_piece_pos(screen, (screen_height + Piece_Radius2, screen_height - Piece_Radius2 * 2), White_Piece.Color)
+    draw_piece_pos(screen, (screen_height + Piece_Radius2, screen_height - int(Piece_Radius2 * 4.5)), Black_Piece.Color)
+    draw_piece_pos(screen, (screen_height + Piece_Radius2, screen_height - Piece_Radius2 * 2), White_Piece.Color)
     print_msg(screen, font, Right_Init_Pos_X, screen_height - int(Piece_Radius2 * 5.5) + 3, f'{black_win_count} Wins', Green_Color)
     print_msg(screen, font, Right_Init_Pos_X, screen_height - Piece_Radius2 * 3 + 3, f'{white_win_count} Wins', Green_Color)
 
 # Draw the piece
-def _draw_piece(screen, point, stone_color):
+def draw_piece(screen, point, stone_color):
     # pygame.draw.circle(screen, stone_color, (Start_X + SIZE * point.X, Start_Y + SIZE * point.Y), Stone_Radius)
     pygame.gfxdraw.aacircle(screen, start_X + size * point.X, start_Y + size* point.Y, Piece_Radius, stone_color)
     pygame.gfxdraw.filled_circle(screen, start_X + size * point.X, start_Y + size * point.Y, Piece_Radius, stone_color)
 
 # Draw the piece position
-def _draw_piece_pos(screen, pos, stone_color):
+def draw_piece_pos(screen, pos, stone_color):
     pygame.gfxdraw.aacircle(screen, pos[0], pos[1], Piece_Radius2, stone_color)
     pygame.gfxdraw.filled_circle(screen, pos[0], pos[1], Piece_Radius2, stone_color)
 
 
 # Return to the game coordinate based on the location of the mouse pointer
-def _get_clickpoint(click_pos):
+def get_clickpoint(click_pos):
     pos_x = click_pos[0] - start_X
     pos_y = click_pos[1] - start_Y
     if pos_x < -inside_width or pos_y < -inside_width:
@@ -207,7 +208,7 @@ class AI:
         for i in range(self._line_points):
             for j in range(self._line_points):
                 if self._checkerboard[j][i] == 0:
-                    _score = self._get_point_score(Point(i, j))
+                    _score = self.get_point_score(Point(i, j))
                     if _score > score:
                         score = _score
                         point = Point(i, j)
@@ -218,13 +219,13 @@ class AI:
         self._checkerboard[point.Y][point.X] = self._my.Value
         return point
 
-    def _get_point_score(self, point):
+    def get_point_score(self, point):
         score = 0
         for os in offset:
-            score += self._get_direction_score(point, os[0], os[1])
+            score += self.get_direction_score(point, os[0], os[1])
         return score
 
-    def _get_direction_score(self, point, x_offset, y_offset):
+    def get_direction_score(self, point, x_offset, y_offset):
         count = 0   # Count the consecutive pieces of BOT
         _count = 0  # Count the consecutive pieces of Player
         space = None   # Check if there is space between consecutive pieces of BOT
@@ -233,7 +234,7 @@ class AI:
         _both = 0   # Check blocking between consecutive pieces of Player
 
         # 1 for BOT, 2 for Player
-        flag = self._get_piece_color(point, x_offset, y_offset, True)
+        flag = self.get_piece_color(point, x_offset, y_offset, True)
         if flag != 0:
             for step in range(1, 6):
                 x = point.X + step * x_offset
@@ -277,7 +278,7 @@ class AI:
         if _space is False:
             _space = None
 
-        _flag = self._get_piece_color(point, -x_offset, -y_offset, True)
+        _flag = self.get_piece_color(point, -x_offset, -y_offset, True)
         if _flag != 0:
             for step in range(1, 6):
                 x = point.X - step * x_offset
@@ -362,7 +363,7 @@ class AI:
         return score
 
     # Make sure there is no overlapping of pieces
-    def _get_piece_color(self, point, x_offset, y_offset, next):
+    def get_piece_color(self, point, x_offset, y_offset, next):
         x = point.X + x_offset
         y = point.Y + y_offset
         if 0 <= x < self._line_points and 0 <= y < self._line_points:
@@ -372,7 +373,7 @@ class AI:
                 return 2
             else:
                 if next:
-                    return self._get_piece_color(Point(x, y), x_offset, y_offset, False)
+                    return self.get_piece_color(Point(x, y), x_offset, y_offset, False)
                 else:
                     return 0
         else:
